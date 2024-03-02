@@ -1,0 +1,121 @@
+Private Sub CommandButton1_Click()
+Range("B3:I10").Borders.LineStyle = True
+Range("B2").Font.Bold = True
+Range("B2").Borders.LineStyle = xlContinuous
+Range("B2").Borders.Weight = xlThick
+
+Dim a(8, 8) As Double
+For i = 1 To 8
+    For j = 1 To 8
+        If i + j > 2 Then
+            a(i, j) = ((2.7) * ((i) ^ (2))) + (3 * i) + j
+        Else
+            a(i, j) = ((16.12 * j) + (0.8 * ((i) ^ (2)))) ^ (1 / 2)
+        End If
+    Next j
+Next i
+ActiveSheet.Range("B2").Value = "Matrix"
+For i = 1 To 8
+    For j = 1 To 8
+        ActiveSheet.Cells(i + 2, j + 1).Value = a(i, j)
+    Next j
+Next i
+End Sub
+
+Private Sub CommandButton2_Click()
+k = CDbl(InputBox("Enter number: "))
+s = CDbl(InputBox("Enter string number: "))
+n = 0
+a = ActiveSheet.Range("B3:I10")
+For j = 1 To 8
+    If a(s, j) < k Then
+        n = n + 1
+    End If
+Next j
+strr = "Number of elements: " + Str(n)
+MsgBox strr
+Range("B14").Borders.LineStyle = True
+Range("B13").Font.Bold = True
+Range("B13").Borders.LineStyle = xlContinuous
+Range("B13").Borders.Weight = xlThick
+ActiveSheet.Range("B13").Value = "Number"
+ActiveSheet.Range("B14").Value = n
+End Sub
+
+Private Sub CommandButton3_Click()
+a = ActiveSheet.Range("B3:I10")
+Dim b(8) As Double
+For j = 1 To 8
+    mn = a(1, j)
+    For i = 1 To 8
+        If a(i, j) < mn Then
+            mn = a(i, j)
+        End If
+    Next i
+    b(j) = mn
+Next j
+
+Range("D14:D21").Borders.LineStyle = True
+Range("D13").Font.Bold = True
+Range("D13").Borders.LineStyle = xlContinuous
+Range("D13").Borders.Weight = xlThick
+ActiveSheet.Range("D13").Value = "Mins"
+For i = 1 To 8
+    ActiveSheet.Cells(i + 13, 4).Value = b(i)
+Next i
+End Sub
+
+Private Sub CommandButton4_Click()
+a = ActiveSheet.Range("B3:I10")
+temp = 0
+For i = 1 To 8
+    temp = a(5, i)
+    a(5, i) = a(7, i)
+    a(7, i) = temp
+Next i
+
+Range("B25:I32").Borders.LineStyle = True
+Range("B24").Font.Bold = True
+Range("B24").Borders.LineStyle = xlContinuous
+Range("B24").Borders.Weight = xlThick
+
+ActiveSheet.Range("B24").Value = "Matrix"
+For i = 1 To 8
+    For j = 1 To 8
+        ActiveSheet.Cells(i + 24, j + 1).Value = a(i, j)
+    Next j
+Next i
+End Sub
+
+Private Sub CommandButton5_Click()
+a = ActiveSheet.Range("B25:I32")
+Dim d1(8) As Double
+Dim d2(8) As Double
+For i = 1 To 8
+    d1(i) = a(i, i)
+Next i
+
+l = 8
+For i = 1 To 8
+    d2(i) = a(l, i)
+    l = l - 1
+Next i
+
+Range("B36:B43").Borders.LineStyle = True
+Range("D36:D43").Borders.LineStyle = True
+Range("B35").Font.Bold = True
+Range("B35").Borders.LineStyle = xlContinuous
+Range("B35").Borders.Weight = xlThick
+Range("D35").Font.Bold = True
+Range("D35").Borders.LineStyle = xlContinuous
+Range("D35").Borders.Weight = xlThick
+
+ActiveSheet.Range("B35").Value = "Main diag"
+ActiveSheet.Range("D35").Value = "Pob diag"
+For i = 1 To 8
+    ActiveSheet.Cells(i + 35, 2).Value = d1(i)
+Next i
+For i = 1 To 8
+    ActiveSheet.Cells(i + 35, 4).Value = d2(i)
+Next i
+End Sub

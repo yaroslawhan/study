@@ -32,8 +32,8 @@ def calculation(method):
         if tup == "Корней нет": x = tup
         else: x, xl, count = tup
     elif method == 2:
-        tup = chords(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f)
-        if tup == "Корней нет": x = tup
+        tup = chords(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f)
+        if tup == "Корней нет" or tup == "Ряд не сходится": x = tup
         else: x, xl, count = tup
     elif method == 3:
         tup = tangent(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f)

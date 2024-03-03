@@ -7,6 +7,7 @@ from tkinter import *
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from scipy import optimize
 
 # Блок данных
 ents = {}
@@ -16,14 +17,12 @@ count_calc = 0
 count_final_table = 0
 
 # Функции в разных формах
-x1 = symbols("x1")
-y = x1**5 + x1 - 1
-
 def f(x):
     return (x**5 + x - 1)
-
 def f1(x):
     return (1 - x**5)
+x1 = symbols("x1")
+y = f(x1)
 
 #Функция для вычисления корней
 def calculation(method):
@@ -32,15 +31,15 @@ def calculation(method):
         if tup == "Корней нет": x = tup
         else: x, xl, count = tup
     elif method == 2:
-        tup = chords(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f)
-        if tup == "Корней нет" or tup == "Ряд не сходится": x = tup
+        tup = chords(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f)
+        if tup == "Корней нет": x = tup
         else: x, xl, count = tup
     elif method == 3:
         tup = tangent(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f)
         if tup == "Корней нет": x = tup
         else: x, xl, count = tup
     else:
-        tup = iteration(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f)
+        tup = iteration(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f, f1)
         if tup == "Корней нет" or tup == "Ряд не сходится": x = tup
         else: x, xl, count = tup
     if tup == "Корней нет" or tup == "Ряд не сходится":
@@ -81,7 +80,7 @@ def root_output(method, xx, yy):
             lbls[i+1].place(x=xx, y=yy)
             #lbl(f"%0.3f"%xl[i], xx, yy)
             xx += 60
-def final_table():
+def final_table(f):
     lbl("Метод вычисления", 950, 10)
     lbl("Значение корня", 1200, 10)
     lbl("Кол-во итераций", 1400, 10)
@@ -111,7 +110,68 @@ def final_table():
             lblsf.append(Label(win, text=tup[3], font=("Arial", 14)))
             lblsf[-1].place(x=xx, y=yy)
         yy += 40
-    #lbl(f"%0.3f"%(dichotomy(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f)[2]), 1300, 50)
+    try:
+        lblsf.append(Label(win, text=f"%0.3f"%(optimize.bisect(f, float(ents["a"].get()), float(ents["b"].get()))), font=("Arial", 14)))
+        lblsf[-1].place(x=xx, y=yy)
+        xx += 200
+        lblsf.append(Label(win, text=str((optimize.bisect(f, float(ents["a"].get()), float(ents["b"].get()), full_output=True)[1].iterations)), font=("Arial", 14)))#f"%0.3f"%
+        lblsf[-1].place(x=xx, y=yy)
+    except:
+        lblsf.append(Label(win, text="Корней нет", font=("Arial", 14)))
+        lblsf[-1].place(x=xx, y=yy)
+
+    # Вывод в файл
+    file = open("output.txt", "w")
+    file.write("Метод вычисления   Значение корня   Кол-во итераций\n")
+    if dichotomy(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f) == "Корней нет":
+        file.write("Дихотомия   Корней нет")
+        file.write("\n")
+    else: 
+        file.write("Дихотомия   ")
+        file.write(f"%0.3f"%dichotomy(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f)[0])
+        file.write("   ")
+        file.write(str(dichotomy(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f)[2]))
+        file.write("\n")
+    if chords(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f) == "Корней нет":
+        file.write("Хорды   Корней нет")
+        file.write("\n")
+    else: 
+        file.write("Хорды   ")
+        file.write(f"%0.3f"%chords(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f)[0])
+        file.write("   ")
+        file.write(str(chords(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f)[2]))
+        file.write("\n")
+    if tangent(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f) == "Корней нет":
+        file.write("Касательные   Корней нет")
+        file.write("\n")
+    else: 
+        file.write("Касательные   ")
+        file.write(f"%0.3f"%tangent(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f)[0])
+        file.write("   ")
+        file.write(str(tangent(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), x1, y, f)[2]))
+        file.write("\n")
+    if iteration(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f, f1) == "Корней нет":
+        file.write("Итерации   Корней нет")
+        file.write("\n")
+    elif iteration(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f, f1) == "Ряд не сходится":
+        file.write("Итерации   Ряд не сходится")
+        file.write("\n")
+    else:
+        print(iteration(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f, f1))
+        file.write("Итерации   ")
+        file.write(f"%0.3f"%iteration(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f, f1)[0])
+        file.write("   ")
+        file.write(str(iteration(float(ents["a"].get()), float(ents["b"].get()), float(ents["eps"].get()), f, f1)[2]))
+        file.write("\n")
+    try:
+        file.write("Библ. функции   ")
+        file.write(f"%0.3f"%optimize.bisect(f, float(ents["a"].get()), float(ents["b"].get())))
+        file.write("   ")
+        file.write(str((optimize.bisect(f, float(ents["a"].get()), float(ents["b"].get()), full_output=True)[1].iterations)))
+        file.write("\n")
+    except:
+        file.write("Корней нет")
+    file.close()
 
 #Создание окна
 win = Tk()
@@ -162,7 +222,8 @@ btn(lambda: root_output(2, xx, yy+30), "Метод хорд", xx, yy+30)
 btn(lambda: root_output(3, xx, yy+60), "Метод касательных", xx, yy+60)
 btn(lambda: root_output(4, xx, yy+90), "Метод итераций", xx, yy+90)
 
-# Итоговая таблица
-btn(final_table, "Итоговая таблица", 650, 300)
+# Итоговая таблица и вывод в файл
+btn(lambda: final_table(f), "Итоговая таблица", 650, 300)
+
 
 win.mainloop()

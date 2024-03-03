@@ -1,9 +1,6 @@
 # Метод хорд
-from sympy import *
 
-def chords(a, b, eps, x1, y, f):
-    if not(abs(diff(y).subs(x1, a)) < 1 and abs(diff(y).subs(x1, b)) < 1):
-        return "Ряд не сходится"
+def chords(a, b, eps, f):
     if f(a)*f(b) < 0:
         count = 1
         x = a - ((b-a)*(f(a)))/(f(b)-f(a))
